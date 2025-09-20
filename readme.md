@@ -35,7 +35,7 @@
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/blogchain.git
+git clone https://github.com/dakaii/blogchain.git
 cd blogchain
 ```
 
@@ -260,7 +260,7 @@ ignite chain serve --reset-once
 ## 📮 Support
 
 For issues and questions:
-- Open an issue on [GitHub](https://github.com/yourusername/blogchain/issues)
+- Open an issue on [GitHub](https://github.com/dakaii/blogchain/issues)
 - Join our Discord community (coming soon)
 
 ---
