@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package blogchain.blog.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "blogchain/x/blog/types";
+
+// Post defines a blog post structure
+message Post {
+  uint64 id = 1;
+  string creator = 2;
+  string title = 3;
+  string body = 4;
+  int64 created_at = 5;
+  repeated string tags = 6;
+  uint64 likes = 7;
+}

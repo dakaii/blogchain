@@ -46,6 +46,7 @@ import (
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	"blogchain/docs"
+	blogmodulekeeper "blogchain/x/blog/keeper"
 	blogchainmodulekeeper "blogchain/x/blogchain/keeper"
 )
 
@@ -101,6 +102,7 @@ type App struct {
 	// simulation manager
 	sm              *module.SimulationManager
 	BlogchainKeeper blogchainmodulekeeper.Keeper
+	BlogKeeper      blogmodulekeeper.Keeper
 }
 
 func init() {
@@ -174,6 +176,7 @@ func New(
 		&app.CircuitBreakerKeeper,
 		&app.ParamsKeeper,
 		&app.BlogchainKeeper,
+		&app.BlogKeeper,
 	); err != nil {
 		panic(err)
 	}

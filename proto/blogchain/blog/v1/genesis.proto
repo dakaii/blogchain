@@ -1,0 +1,24 @@
+syntax = "proto3";
+package blogchain.blog.v1;
+
+import "amino/amino.proto";
+import "blogchain/blog/v1/params.proto";
+import "blogchain/blog/v1/post.proto";
+import "gogoproto/gogo.proto";
+
+option go_package = "blogchain/x/blog/types";
+
+// GenesisState defines the blog module's genesis state.
+message GenesisState {
+  // params defines all the parameters of the module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+  
+  // posts are the posts that exist at genesis.
+  repeated Post posts = 2 [(gogoproto.nullable) = false];
+  
+  // post_count tracks the next post id to be assigned
+  uint64 post_count = 3;
+}

@@ -1,6 +1,8 @@
 package app
 
 import (
+	_ "blogchain/x/blog/module"
+	blogmoduletypes "blogchain/x/blog/types"
 	_ "blogchain/x/blogchain/module"
 	blogchainmoduletypes "blogchain/x/blogchain/types"
 	"time"
@@ -126,6 +128,7 @@ var (
 						ibcexported.ModuleName,
 						// chain modules
 						blogchainmoduletypes.ModuleName,
+						blogmoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/beginBlockers
 					},
 					EndBlockers: []string{
@@ -135,6 +138,7 @@ var (
 						group.ModuleName,
 						// chain modules
 						blogchainmoduletypes.ModuleName,
+						blogmoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/endBlockers
 					},
 					// The following is mostly only needed when ModuleName != StoreKey name.
@@ -172,6 +176,7 @@ var (
 						icatypes.ModuleName,
 						// chain modules
 						blogchainmoduletypes.ModuleName,
+						blogmoduletypes.ModuleName,
 						// this line is used by starport scaffolding # stargate/app/initGenesis
 					},
 				}),
@@ -271,6 +276,10 @@ var (
 			{
 				Name:   blogchainmoduletypes.ModuleName,
 				Config: appconfig.WrapAny(&blogchainmoduletypes.Module{}),
+			},
+			{
+				Name:   blogmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&blogmoduletypes.Module{}),
 			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},
