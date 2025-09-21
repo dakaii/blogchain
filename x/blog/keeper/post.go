@@ -31,7 +31,7 @@ func (k Keeper) SetPostCount(ctx context.Context, count uint64) {
 
 func (k Keeper) AppendPost(ctx context.Context, post types.Post) uint64 {
 	count := k.GetPostCount(ctx)
-	post.Id = count
+	post.Id = count + 1  // Start IDs at 1 instead of 0
 	
 	store := k.storeService.OpenKVStore(ctx)
 	key := GetPostKey(post.Id)
@@ -40,7 +40,7 @@ func (k Keeper) AppendPost(ctx context.Context, post types.Post) uint64 {
 	store.Set(key, appendedValue)
 	
 	k.SetPostCount(ctx, count+1)
-	return count
+	return post.Id
 }
 
 func (k Keeper) GetPost(ctx context.Context, id uint64) (types.Post, bool) {

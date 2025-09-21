@@ -12,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 
 	"blogchain/x/blog/keeper"
 	module "blogchain/x/blog/module"
@@ -27,8 +28,11 @@ type fixture struct {
 func initFixture(t *testing.T) *fixture {
 	t.Helper()
 
+	// Set up the bech32 prefix
+	sdk.GetConfig().SetBech32PrefixForAccount("blogchain", "blogchainpub")
+	
 	encCfg := moduletestutil.MakeTestEncodingConfig(module.AppModule{})
-	addressCodec := addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
+	addressCodec := addresscodec.NewBech32Codec("blogchain")
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	storeService := runtime.NewKVStoreService(storeKey)
@@ -53,4 +57,33 @@ func initFixture(t *testing.T) *fixture {
 		keeper:       k,
 		addressCodec: addressCodec,
 	}
+}
+
+// GenerateTestAddresses creates valid bech32 addresses for testing
+func GenerateTestAddresses(t *testing.T, count int) []string {
+	t.Helper()
+	
+	addresses := make([]string, count)
+	for i := 0; i < count; i++ {
+		// Generate a new private key
+		privKey := secp256k1.GenPrivKey()
+		
+		// Get the public key
+		pubKey := privKey.PubKey()
+		
+		// Derive the address
+		addr := sdk.AccAddress(pubKey.Address())
+		
+		// Convert to bech32 string with blogchain prefix
+		addresses[i] = addr.String()
+	}
+	
+	return addresses
+}
+
+// GetTestAddress returns a single valid test address
+func GetTestAddress(t *testing.T) string {
+	t.Helper()
+	addresses := GenerateTestAddresses(t, 1)
+	return addresses[0]
 }

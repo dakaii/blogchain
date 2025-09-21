@@ -68,7 +68,11 @@ export const useBlockchainStore = defineStore('blockchain', () => {
   async function updateBalance() {
     if (!currentAddress.value) return
     try {
-      balance.value = await service.getBalance(currentAddress.value)
+      const balances = await service.getBalance(currentAddress.value)
+      balance.value = balances.map(coin => ({
+        denom: coin.denom,
+        amount: coin.amount
+      }))
     } catch (e) {
       console.error('Failed to update balance:', e)
     }
