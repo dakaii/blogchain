@@ -86,11 +86,11 @@ func TestMsgServerCreatePost(t *testing.T) {
 			} else {
 				require.NoError(err)
 				require.NotNil(resp)
-				require.NotZero(resp.Id)
+				// ID can be 0 since sequences start at 0
 				
 				// Verify post was actually created
-				post, found := f.keeper.GetPost(f.ctx, resp.Id)
-				require.True(found)
+				post, err := f.keeper.GetPost(f.ctx, resp.Id)
+				require.NoError(err)
 				require.Equal(tc.msg.Creator, post.Creator)
 				require.Equal(tc.msg.Title, post.Title)
 				require.Equal(tc.msg.Body, post.Body)
@@ -153,8 +153,8 @@ func TestMsgServerCreateMultiplePosts(t *testing.T) {
 	
 	// Verify all posts exist and have sequential IDs
 	for i, id := range postIds {
-		post, found := f.keeper.GetPost(f.ctx, id)
-		require.True(found)
+		post, err := f.keeper.GetPost(f.ctx, id)
+		require.NoError(err)
 		require.Equal(fmt.Sprintf("Post %d", i+1), post.Title)
 		
 		// IDs should be sequential

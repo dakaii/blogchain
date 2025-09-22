@@ -50,12 +50,15 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 	if in.Config.Authority != "" {
 		authority = authtypes.NewModuleAddressOrBech32Address(in.Config.Authority)
 	}
-	k := keeper.NewKeeper(
+	k, err := keeper.NewKeeper(
 		in.StoreService,
 		in.Cdc,
 		in.AddressCodec,
 		authority,
 	)
+	if err != nil {
+		panic(err) // depinject doesn't support error returns, so we must panic
+	}
 	m := NewAppModule(in.Cdc, k, in.AuthKeeper, in.BankKeeper)
 
 	return ModuleOutputs{BlogKeeper: k, Module: m}

@@ -25,7 +25,10 @@ func (k msgServer) CreatePost(ctx context.Context, msg *types.MsgCreatePost) (*t
 		Likes:     0,
 	}
 
-	id := k.AppendPost(ctx, post)
+	id, err := k.AppendPost(ctx, post)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to create post")
+	}
 
 	return &types.MsgCreatePostResponse{
 		Id: id,

@@ -30,8 +30,8 @@ func TestMsgServerLikePost(t *testing.T) {
 	postId := createResp.Id
 	
 	// Get initial state
-	post, found := f.keeper.GetPost(f.ctx, postId)
-	require.True(found)
+	post, err := f.keeper.GetPost(f.ctx, postId)
+	require.NoError(err)
 	require.Equal(uint64(0), post.Likes)
 	
 	// Like the post
@@ -45,8 +45,8 @@ func TestMsgServerLikePost(t *testing.T) {
 	require.NotNil(resp)
 	
 	// Verify like count increased
-	post, found = f.keeper.GetPost(f.ctx, postId)
-	require.True(found)
+	post, err = f.keeper.GetPost(f.ctx, postId)
+	require.NoError(err)
 	require.Equal(uint64(1), post.Likes)
 }
 
@@ -84,8 +84,8 @@ func TestMsgServerLikePostMultipleTimes(t *testing.T) {
 	}
 	
 	// Verify final like count
-	post, found := f.keeper.GetPost(f.ctx, postId)
-	require.True(found)
+	post, err := f.keeper.GetPost(f.ctx, postId)
+	require.NoError(err)
 	require.Equal(uint64(len(likers)), post.Likes)
 }
 
@@ -189,14 +189,14 @@ func TestMsgServerLikeSamePostTwice(t *testing.T) {
 	require.NotNil(resp)
 	
 	// Try to like the same post again with same user
-	// This should ideally fail, but depends on your business logic
-	// For now, it seems to increment the count
+	// This should fail as duplicate likes are not allowed
 	resp, err = msgServer.LikePost(f.ctx, likeMsg)
-	require.NoError(err)
-	require.NotNil(resp)
+	require.Error(err)
+	require.Contains(err.Error(), "already liked")
+	require.Nil(resp)
 	
-	// Verify like count
-	post, found := f.keeper.GetPost(f.ctx, postId)
-	require.True(found)
-	require.Equal(uint64(2), post.Likes) // Currently allows duplicate likes
+	// Verify like count remains at 1 (duplicate was prevented)
+	post, err := f.keeper.GetPost(f.ctx, postId)
+	require.NoError(err)
+	require.Equal(uint64(1), post.Likes) // Duplicate like was prevented
 }

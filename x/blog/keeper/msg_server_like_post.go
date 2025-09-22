@@ -14,13 +14,29 @@ func (k msgServer) LikePost(ctx context.Context, msg *types.MsgLikePost) (*types
 		return nil, errorsmod.Wrap(err, "invalid liker address")
 	}
 
-	post, found := k.GetPost(ctx, msg.PostId)
-	if !found {
-		return nil, errorsmod.Wrap(sdkerrors.ErrNotFound, "post not found")
+	// Check if user has already liked this post
+	alreadyLiked, err := k.HasUserLikedPost(ctx, msg.PostId, msg.Liker)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to check if user liked post")
+	}
+	if alreadyLiked {
+		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "user has already liked this post")
+	}
+
+	post, err := k.GetPost(ctx, msg.PostId)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get post")
 	}
 
 	post.Likes++
-	k.SetPost(ctx, post)
+	if err := k.SetPost(ctx, post); err != nil {
+		return nil, errorsmod.Wrap(err, "failed to update post")
+	}
+
+	// Mark that user has liked the post
+	if err := k.SetUserLikedPost(ctx, msg.PostId, msg.Liker); err != nil {
+		return nil, errorsmod.Wrap(err, "failed to record user like")
+	}
 
 	return &types.MsgLikePostResponse{}, nil
 }

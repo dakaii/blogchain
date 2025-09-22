@@ -16,3 +16,16 @@ message Post {
   repeated string tags = 6;
   uint64 likes = 7;
 }
+
+// PageRequest defines pagination parameters
+message PageRequest {
+  uint64 limit = 1;
+  uint64 offset = 2;
+}
+
+// PageResponse defines pagination response
+message PageResponse {
+  uint64 total = 1;
+  uint64 limit = 2;
+  uint64 offset = 3;
+}

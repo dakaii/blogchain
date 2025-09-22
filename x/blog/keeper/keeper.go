@@ -19,8 +19,11 @@ type Keeper struct {
 	// Typically, this should be the x/gov module account.
 	authority []byte
 
-	Schema collections.Schema
-	Params collections.Item[types.Params]
+	Schema    collections.Schema
+	Params    collections.Item[types.Params]
+	Posts     collections.Map[uint64, types.Post]
+	PostCount collections.Sequence
+	LikedBy   collections.Map[collections.Pair[uint64, string], bool] // (postID, userAddr) -> liked
 }
 
 func NewKeeper(
@@ -28,10 +31,9 @@ func NewKeeper(
 	cdc codec.Codec,
 	addressCodec address.Codec,
 	authority []byte,
-
-) Keeper {
+) (Keeper, error) {
 	if _, err := addressCodec.BytesToString(authority); err != nil {
-		panic(fmt.Sprintf("invalid authority address %s: %s", authority, err))
+		return Keeper{}, fmt.Errorf("invalid authority address %s: %w", authority, err)
 	}
 
 	sb := collections.NewSchemaBuilder(storeService)
@@ -42,16 +44,19 @@ func NewKeeper(
 		addressCodec: addressCodec,
 		authority:    authority,
 
-		Params: collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		Params:    collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		Posts:     collections.NewMap(sb, collections.NewPrefix([]byte(types.PostKey)), "posts", collections.Uint64Key, codec.CollValue[types.Post](cdc)),
+		PostCount: collections.NewSequence(sb, collections.NewPrefix([]byte(types.PostCountKey)), "post_count"),
+		LikedBy:   collections.NewMap(sb, collections.NewPrefix([]byte("liked_by/")), "liked_by", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.BoolValue),
 	}
 
 	schema, err := sb.Build()
 	if err != nil {
-		panic(err)
+		return Keeper{}, fmt.Errorf("failed to build schema: %w", err)
 	}
 	k.Schema = schema
 
-	return k
+	return k, nil
 }
 
 // GetAuthority returns the module's authority.
