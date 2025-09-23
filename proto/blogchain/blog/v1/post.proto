@@ -15,6 +15,11 @@ message Post {
   int64 created_at = 5;
   repeated string tags = 6;
   uint64 likes = 7;
+  int64 updated_at = 8;
+  bool deleted = 9;
+  int64 deleted_at = 10;
+  repeated string media_blob_ids = 11; // Walrus blob IDs for media
+  string content_blob_id = 12; // Walrus blob ID for large content
 }
 
 // PageRequest defines pagination parameters

@@ -8,10 +8,21 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func (k Keeper) InitGenesis(ctx context.Context, genState types.GenesisState) error {
-	// Set all the posts
+	// Set all the posts and update indexes
 	for _, post := range genState.Posts {
 		if err := k.Posts.Set(ctx, post.Id, post); err != nil {
 			return err
+		}
+		
+		// Update indexes based on deletion status
+		if post.Deleted {
+			if err := k.DeletedPosts.Set(ctx, post.Id, true); err != nil {
+				return err
+			}
+		} else {
+			if err := k.ActivePosts.Set(ctx, post.Id, true); err != nil {
+				return err
+			}
 		}
 	}
 	

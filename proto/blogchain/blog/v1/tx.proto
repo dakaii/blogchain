@@ -21,6 +21,12 @@ service Msg {
   // CreatePost defines the CreatePost RPC.
   rpc CreatePost(MsgCreatePost) returns (MsgCreatePostResponse);
 
+  // UpdatePost defines the UpdatePost RPC.
+  rpc UpdatePost(MsgUpdatePost) returns (MsgUpdatePostResponse);
+
+  // DeletePost defines the DeletePost RPC.
+  rpc DeletePost(MsgDeletePost) returns (MsgDeletePostResponse);
+
   // LikePost defines the LikePost RPC.
   rpc LikePost(MsgLikePost) returns (MsgLikePostResponse);
 }
@@ -69,3 +75,28 @@ message MsgLikePost {
 
 // MsgLikePostResponse defines the MsgLikePostResponse message.
 message MsgLikePostResponse {}
+
+// MsgUpdatePost defines the MsgUpdatePost message.
+message MsgUpdatePost {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+  string title = 3;
+  string body = 4;
+  repeated string tags = 5;
+  repeated string media_blob_ids = 6;
+  string content_blob_id = 7;
+}
+
+// MsgUpdatePostResponse defines the MsgUpdatePostResponse message.
+message MsgUpdatePostResponse {}
+
+// MsgDeletePost defines the MsgDeletePost message.
+message MsgDeletePost {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+}
+
+// MsgDeletePostResponse defines the MsgDeletePostResponse message.
+message MsgDeletePostResponse {}

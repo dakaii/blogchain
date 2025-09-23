@@ -19,11 +19,13 @@ type Keeper struct {
 	// Typically, this should be the x/gov module account.
 	authority []byte
 
-	Schema    collections.Schema
-	Params    collections.Item[types.Params]
-	Posts     collections.Map[uint64, types.Post]
-	PostCount collections.Sequence
-	LikedBy   collections.Map[collections.Pair[uint64, string], bool] // (postID, userAddr) -> liked
+	Schema       collections.Schema
+	Params       collections.Item[types.Params]
+	Posts        collections.Map[uint64, types.Post]
+	ActivePosts  collections.Map[uint64, bool] // Index of non-deleted posts
+	DeletedPosts collections.Map[uint64, bool] // Index of deleted posts
+	PostCount    collections.Sequence
+	LikedBy      collections.Map[collections.Pair[uint64, string], bool] // (postID, userAddr) -> liked
 }
 
 func NewKeeper(
@@ -44,10 +46,12 @@ func NewKeeper(
 		addressCodec: addressCodec,
 		authority:    authority,
 
-		Params:    collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
-		Posts:     collections.NewMap(sb, collections.NewPrefix([]byte(types.PostKey)), "posts", collections.Uint64Key, codec.CollValue[types.Post](cdc)),
-		PostCount: collections.NewSequence(sb, collections.NewPrefix([]byte(types.PostCountKey)), "post_count"),
-		LikedBy:   collections.NewMap(sb, collections.NewPrefix([]byte("liked_by/")), "liked_by", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.BoolValue),
+		Params:       collections.NewItem(sb, types.ParamsKey, "params", codec.CollValue[types.Params](cdc)),
+		Posts:        collections.NewMap(sb, collections.NewPrefix([]byte(types.PostKey)), "posts", collections.Uint64Key, codec.CollValue[types.Post](cdc)),
+		ActivePosts:  collections.NewMap(sb, collections.NewPrefix([]byte("active_posts/")), "active_posts", collections.Uint64Key, collections.BoolValue),
+		DeletedPosts: collections.NewMap(sb, collections.NewPrefix([]byte("deleted_posts/")), "deleted_posts", collections.Uint64Key, collections.BoolValue),
+		PostCount:    collections.NewSequence(sb, collections.NewPrefix([]byte(types.PostCountKey)), "post_count"),
+		LikedBy:      collections.NewMap(sb, collections.NewPrefix([]byte("liked_by/")), "liked_by", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.BoolValue),
 	}
 
 	schema, err := sb.Build()

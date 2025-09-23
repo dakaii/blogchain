@@ -32,7 +32,10 @@ func (q queryServer) Posts(ctx context.Context, req *types.QueryPostsRequest) (*
 			if err := q.k.cdc.Unmarshal(value, &post); err != nil {
 				return err
 			}
-			posts = append(posts, post)
+			// Skip deleted posts
+			if !post.Deleted {
+				posts = append(posts, post)
+			}
 			return nil
 		})
 		if err != nil {
