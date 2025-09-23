@@ -29,6 +29,18 @@ service Msg {
 
   // LikePost defines the LikePost RPC.
   rpc LikePost(MsgLikePost) returns (MsgLikePostResponse);
+
+  // CreateComment defines the CreateComment RPC.
+  rpc CreateComment(MsgCreateComment) returns (MsgCreateCommentResponse);
+
+  // UpdateComment defines the UpdateComment RPC.
+  rpc UpdateComment(MsgUpdateComment) returns (MsgUpdateCommentResponse);
+
+  // DeleteComment defines the DeleteComment RPC.
+  rpc DeleteComment(MsgDeleteComment) returns (MsgDeleteCommentResponse);
+
+  // LikeComment defines the LikeComment RPC.
+  rpc LikeComment(MsgLikeComment) returns (MsgLikeCommentResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -100,3 +112,48 @@ message MsgDeletePost {
 
 // MsgDeletePostResponse defines the MsgDeletePostResponse message.
 message MsgDeletePostResponse {}
+
+// MsgCreateComment defines the MsgCreateComment message.
+message MsgCreateComment {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 post_id = 2;
+  uint64 parent_id = 3; // 0 for root comment, comment_id for reply
+  string content = 4;
+}
+
+// MsgCreateCommentResponse defines the MsgCreateCommentResponse message.
+message MsgCreateCommentResponse {
+  uint64 id = 1;
+}
+
+// MsgUpdateComment defines the MsgUpdateComment message.
+message MsgUpdateComment {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+  string content = 3;
+}
+
+// MsgUpdateCommentResponse defines the MsgUpdateCommentResponse message.
+message MsgUpdateCommentResponse {}
+
+// MsgDeleteComment defines the MsgDeleteComment message.
+message MsgDeleteComment {
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 id = 2;
+}
+
+// MsgDeleteCommentResponse defines the MsgDeleteCommentResponse message.
+message MsgDeleteCommentResponse {}
+
+// MsgLikeComment defines the MsgLikeComment message.
+message MsgLikeComment {
+  option (cosmos.msg.v1.signer) = "liker";
+  string liker = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  uint64 comment_id = 2;
+}
+
+// MsgLikeCommentResponse defines the MsgLikeCommentResponse message.
+message MsgLikeCommentResponse {}

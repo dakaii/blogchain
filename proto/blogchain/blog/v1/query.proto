@@ -4,6 +4,7 @@ package blogchain.blog.v1;
 import "amino/amino.proto";
 import "blogchain/blog/v1/params.proto";
 import "blogchain/blog/v1/post.proto";
+import "blogchain/blog/v1/comment.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
@@ -25,6 +26,21 @@ service Query {
   // Post queries a single post by id
   rpc Post(QueryPostRequest) returns (QueryPostResponse) {
     option (google.api.http).get = "/blogchain/blog/v1/posts/{id}";
+  }
+
+  // Comments queries comments for a post
+  rpc Comments(QueryCommentsRequest) returns (QueryCommentsResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/posts/{post_id}/comments";
+  }
+
+  // Comment queries a single comment by id
+  rpc Comment(QueryCommentRequest) returns (QueryCommentResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/comments/{id}";
+  }
+
+  // CommentThread queries a comment with all its nested replies
+  rpc CommentThread(QueryCommentThreadRequest) returns (QueryCommentThreadResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/comments/{id}/thread";
   }
 }
 
@@ -59,4 +75,38 @@ message QueryPostRequest {
 // QueryPostResponse is response type for the Query/Post RPC method.
 message QueryPostResponse {
   Post post = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCommentsRequest is request type for the Query/Comments RPC method.
+message QueryCommentsRequest {
+  uint64 post_id = 1;
+  uint64 parent_id = 2; // 0 for root comments
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// QueryCommentsResponse is response type for the Query/Comments RPC method.
+message QueryCommentsResponse {
+  repeated Comment comments = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryCommentRequest is request type for the Query/Comment RPC method.
+message QueryCommentRequest {
+  uint64 id = 1;
+}
+
+// QueryCommentResponse is response type for the Query/Comment RPC method.
+message QueryCommentResponse {
+  Comment comment = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryCommentThreadRequest is request type for the Query/CommentThread RPC method.
+message QueryCommentThreadRequest {
+  uint64 id = 1;
+  uint32 max_depth = 2; // Maximum depth to fetch (0 = unlimited)
+}
+
+// QueryCommentThreadResponse is response type for the Query/CommentThread RPC method.
+message QueryCommentThreadResponse {
+  CommentThread thread = 1 [(gogoproto.nullable) = false];
 }
