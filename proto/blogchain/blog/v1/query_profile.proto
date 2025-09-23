@@ -1,0 +1,70 @@
+syntax = "proto3";
+package blogchain.blog.v1;
+
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "blogchain/blog/v1/profile.proto";
+
+option go_package = "blogchain/x/blog/types";
+
+// QueryProfileRequest is the request type for the Query/Profile RPC method
+message QueryProfileRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryProfileResponse {
+  Profile profile = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryProfileByUsernameRequest is the request type for the Query/ProfileByUsername RPC method
+message QueryProfileByUsernameRequest {
+  string username = 1;
+}
+
+message QueryProfileByUsernameResponse {
+  Profile profile = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryProfilesRequest is the request type for the Query/Profiles RPC method
+message QueryProfilesRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryProfilesResponse {
+  repeated Profile profiles = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryFollowersRequest is the request type for the Query/Followers RPC method
+message QueryFollowersRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryFollowersResponse {
+  repeated string followers = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryFollowingRequest is the request type for the Query/Following RPC method
+message QueryFollowingRequest {
+  string address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryFollowingResponse {
+  repeated string following = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryIsFollowingRequest checks if one user is following another
+message QueryIsFollowingRequest {
+  string follower = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string following = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+}
+
+message QueryIsFollowingResponse {
+  bool is_following = 1;
+}

@@ -4,6 +4,7 @@ package blogchain.blog.v1;
 
 import "amino/amino.proto";
 import "blogchain/blog/v1/params.proto";
+import "blogchain/blog/v1/profile.proto";
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
@@ -41,6 +42,18 @@ service Msg {
 
   // LikeComment defines the LikeComment RPC.
   rpc LikeComment(MsgLikeComment) returns (MsgLikeCommentResponse);
+
+  // CreateProfile defines the CreateProfile RPC.
+  rpc CreateProfile(MsgCreateProfile) returns (MsgCreateProfileResponse);
+
+  // UpdateProfile defines the UpdateProfile RPC.
+  rpc UpdateProfile(MsgUpdateProfile) returns (MsgUpdateProfileResponse);
+
+  // Follow defines the Follow RPC.
+  rpc Follow(MsgFollow) returns (MsgFollowResponse);
+
+  // Unfollow defines the Unfollow RPC.
+  rpc Unfollow(MsgUnfollow) returns (MsgUnfollowResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.

@@ -43,6 +43,12 @@ func (k msgServer) DeletePost(ctx context.Context, msg *types.MsgDeletePost) (*t
 		return nil, errorsmod.Wrap(err, "failed to delete post")
 	}
 
+	// Decrement post count for user profile
+	if err := k.DecrementPostCount(ctx, post.Creator); err != nil {
+		// Log error but don't fail post deletion
+		// Profile might not exist, which is okay
+	}
+
 	// Emit event
 	sdkCtx.EventManager().EmitEvent(
 		sdk.NewEvent(

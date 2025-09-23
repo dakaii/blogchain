@@ -34,6 +34,11 @@ type Keeper struct {
 	ChildComments   collections.Map[collections.Pair[uint64, uint64], bool] // (parentID, commentID) -> exists
 	CommentCount    collections.Sequence
 	LikedComments   collections.Map[collections.Pair[uint64, string], bool] // (commentID, userAddr) -> liked
+	
+	// Profile collections
+	Profiles          collections.Map[string, types.Profile] // address -> profile
+	UsernameToAddress collections.Map[string, string]         // username -> address
+	Follows           collections.Map[collections.Pair[string, string], bool] // (follower, following) -> exists
 }
 
 func NewKeeper(
@@ -68,6 +73,11 @@ func NewKeeper(
 		ChildComments:  collections.NewMap(sb, collections.NewPrefix([]byte("child_comments/")), "child_comments", collections.PairKeyCodec(collections.Uint64Key, collections.Uint64Key), collections.BoolValue),
 		CommentCount:   collections.NewSequence(sb, collections.NewPrefix([]byte("comment_count/")), "comment_count"),
 		LikedComments:  collections.NewMap(sb, collections.NewPrefix([]byte("liked_comments/")), "liked_comments", collections.PairKeyCodec(collections.Uint64Key, collections.StringKey), collections.BoolValue),
+		
+		// Profile collections
+		Profiles:          collections.NewMap(sb, collections.NewPrefix([]byte("profiles/")), "profiles", collections.StringKey, codec.CollValue[types.Profile](cdc)),
+		UsernameToAddress: collections.NewMap(sb, collections.NewPrefix([]byte("username_to_address/")), "username_to_address", collections.StringKey, collections.StringValue),
+		Follows:           collections.NewMap(sb, collections.NewPrefix([]byte("follows/")), "follows", collections.PairKeyCodec(collections.StringKey, collections.StringKey), collections.BoolValue),
 	}
 
 	schema, err := sb.Build()

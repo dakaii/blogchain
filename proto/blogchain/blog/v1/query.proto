@@ -5,6 +5,8 @@ import "amino/amino.proto";
 import "blogchain/blog/v1/params.proto";
 import "blogchain/blog/v1/post.proto";
 import "blogchain/blog/v1/comment.proto";
+import "blogchain/blog/v1/profile.proto";
+import "blogchain/blog/v1/query_profile.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
@@ -41,6 +43,36 @@ service Query {
   // CommentThread queries a comment with all its nested replies
   rpc CommentThread(QueryCommentThreadRequest) returns (QueryCommentThreadResponse) {
     option (google.api.http).get = "/blogchain/blog/v1/comments/{id}/thread";
+  }
+
+  // Profile queries a profile by address
+  rpc Profile(QueryProfileRequest) returns (QueryProfileResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/profiles/{address}";
+  }
+
+  // ProfileByUsername queries a profile by username
+  rpc ProfileByUsername(QueryProfileByUsernameRequest) returns (QueryProfileByUsernameResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/profiles/username/{username}";
+  }
+
+  // Profiles queries all profiles with pagination
+  rpc Profiles(QueryProfilesRequest) returns (QueryProfilesResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/profiles";
+  }
+
+  // Followers queries followers of a user
+  rpc Followers(QueryFollowersRequest) returns (QueryFollowersResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/profiles/{address}/followers";
+  }
+
+  // Following queries users that a user is following
+  rpc Following(QueryFollowingRequest) returns (QueryFollowingResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/profiles/{address}/following";
+  }
+
+  // IsFollowing checks if one user is following another
+  rpc IsFollowing(QueryIsFollowingRequest) returns (QueryIsFollowingResponse) {
+    option (google.api.http).get = "/blogchain/blog/v1/profiles/{follower}/following/{following}";
   }
 }
 

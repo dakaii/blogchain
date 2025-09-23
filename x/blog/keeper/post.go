@@ -128,13 +128,19 @@ func (k Keeper) GetAllPostsPaginated(ctx context.Context, pageReq *types.PageReq
 		pageReq.Limit = 50
 	}
 	
-	skipped := uint64(0)
+	// First, count total active posts
 	activePostCount := uint64(0)
-	
-	// Walk through active posts index only
 	err := k.ActivePosts.Walk(ctx, nil, func(postID uint64, _ bool) (stop bool, err error) {
 		activePostCount++
-		
+		return false, nil
+	})
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to count active posts: %w", err)
+	}
+	
+	// Then collect the requested page
+	skipped := uint64(0)
+	err = k.ActivePosts.Walk(ctx, nil, func(postID uint64, _ bool) (stop bool, err error) {
 		// Skip entries based on offset
 		if skipped < pageReq.Offset {
 			skipped++
@@ -164,7 +170,7 @@ func (k Keeper) GetAllPostsPaginated(ctx context.Context, pageReq *types.PageReq
 	}
 	
 	pageRes := &types.PageResponse{
-		Total:  activePostCount, // Only count non-deleted posts
+		Total:  activePostCount, // Total count of non-deleted posts
 		Limit:  pageReq.Limit,
 		Offset: pageReq.Offset,
 	}

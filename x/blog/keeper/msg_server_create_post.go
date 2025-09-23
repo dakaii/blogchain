@@ -30,6 +30,12 @@ func (k msgServer) CreatePost(ctx context.Context, msg *types.MsgCreatePost) (*t
 		return nil, errorsmod.Wrap(err, "failed to create post")
 	}
 
+	// Increment post count for user profile
+	if err := k.IncrementPostCount(ctx, msg.Creator); err != nil {
+		// Log error but don't fail post creation
+		// Profile might not exist yet, which is okay
+	}
+
 	return &types.MsgCreatePostResponse{
 		Id: id,
 	}, nil
